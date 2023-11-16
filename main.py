@@ -11,15 +11,13 @@ import gdown
 
 app = Flask(__name__, template_folder=os.path.abspath(''))
 
-# Descargar el modelo previamente entrenado desde gogle
-model_url = 'https://drive.google.com/uc?export=view&id=1LXiVwMHtRLkV8ZegBCcz1KDE4xlfIK8t'
-model_path = 'asd_best_model.h5'
-gdown.download(model_url, model_path, quiet=False)
+# Load the previously trained model from the local filesystem
+model_path = os.path.join(os.getcwd(), 'asd_best_model.h5')
+model = tf.keras.models.load_model(model_path)
 
-# Descargar el detector de landmarks de dlib desde drive
-landmarks_url = 'https://drive.google.com/uc?export=view&id=1bnE0fryskX4ebGVG7yXi5MTIK9oFevN9'
-landmarks_path = 'shape_predictor_68_face_landmarks.dat'
-gdown.download(landmarks_url, landmarks_path, quiet=False)
+# Load the dlib landmarks detector from the local filesystem
+landmarks_path = os.path.join(os.getcwd(), 'shape_predictor_68_face_landmarks.dat')
+predictor = dlib.shape_predictor(landmarks_path)
 
 # Cargar el modelo previamente entrenado
 model = tf.keras.models.load_model(model_path)
@@ -68,7 +66,7 @@ def predict():
 
     return jsonify({'predicted_text': predicted_text, 'output_img_base64': output_img_base64})
 
-# Inicializar el detector de rostros de dli
+# Inicializar el detector de rostros de dlib
 detector = dlib.get_frontal_face_detector()
 
 if __name__ == '__main__':
